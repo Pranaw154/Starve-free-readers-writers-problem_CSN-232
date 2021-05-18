@@ -6,6 +6,7 @@ int reader_count = 0; // stores the number of readers who are reading
 semaphore reader_mutex; // initially 1 and ensures that reader_count is changed with proper synchronization
 semaphore sequence; // initially 1 and maintaines the sequence in which reader and writer arrives
 semaphore access_mutex; // initially 1 and gives the access to reader/writer
+
 // Reader's part
 void reader(){
   /* Entry section */
