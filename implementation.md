@@ -1,4 +1,4 @@
-# Third readers–writers problem
+# Starve Free Readers–Writers Problem
 
 ### **Pseudocode**
 ```cpp
@@ -7,7 +7,7 @@ semaphore reader_mutex; // initially 1 and ensures that reader_count is changed 
 semaphore sequence; // initially 1 and maintaines the sequence in which reader and writer arrives
 semaphore access_mutex; // initially 1 and gives the access to reader/writer
 
-// Reader's part
+// Readers part
 void reader(){
   /* Entry section */
     down(sequence); // maintain the arrival sequence
@@ -35,7 +35,7 @@ void reader(){
 
 }
 
-// Writer's part
+// Writers part
 void writer(){
   /* Entry section */
     down(sequence); // maintain the arrival sequence
@@ -54,3 +54,20 @@ void writer(){
 }
 ```
 > **Note:** ***down*** is also called as ***P***, ***wait*** or ***sleep***. Meanwhile, ***up*** is also known as ***V***, ***signal*** or ***wake-up***.
+
+## Explanation
+As mentioned earlier in [README](./README.md), in this variant gives priority to the processes (reader or writer) on the basis of ***arrival*** of their requests. 
+
+To implement this, I used three *semaphores*- 
+
+First is **sequence** which maintains the sequence in which readers and writers arrives in a queue. This semaphore will be called with the *down()* function as soon as a new process arrives and is freed when the process can access the resources. 
+
+Second semaphore that I used is **reader_mutex** which is used to monitor the **reader_count** variable. Whenever a reader tries to join or leave it needs to change the **reader_count** variable, so this **reader_mutex** semaphore ensures that no simultaneous access of **reader_count** variable is there to create synchronization issue. 
+
+Another semaphore that I used is **access_mutex** which writer will request before updating the data and release after updating it. Now, whenever the first reader arrives it must should take the permission to access the data, which it seeks by calling the **access_mutex** and when the last reader is leaving then it should free up the **access_mutex**. As we can see in the pseudocode (in Readers part) we deal with this **access_mutex** only when the first reader enters or last reader leaves. 
+
+***In readers part***, in *entry section* **sequence** semaphore is checked and then we call the **reader_mutex** so that the variable **reader_count** can be updated (increased). Now we check if it is the first reader, if found so then we call the **access_mutex** semaphore to gain the access of critical section. After this we update the **reader_count** variable and then release the **sequence** semaphore followed by the **reader_mutex** semaphore so that the newer process can access it. After all of this, this reader enters into *critical section* and reads the required data. Then it goes in the *exit section* and calls the **reader_mutex** semaphore as it needs to update (decrease) the value of **reader_count** variable and then the value of **reader_count** is decremented. After this if there are no more readers then the **access_mutex** is freed. Then finally the **reader_mutex** semaphore is released.
+
+***In writers part***, in *entry section* first of all the **sequence** semaphore is checked. After that the **access_mutex** is checked to make sure that there is no conflict of resources in critical section. Then we release the **sequence** semaphore so that other process can access it. After that the writer get into the *critical section* and does its work there. After its task is complete, it comes out in *exit section* and release the **access_mutex** semaphore
+
+In this way, we can overcome the limitations of first and second readers writers problem by eliminating the scope of starvation.
