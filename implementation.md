@@ -76,3 +76,5 @@ In this way, we can overcome the limitations of first and second readers writers
 - As **access_mutex** semaphore ensures that there is no conflict of resources in critical section (i.e., not more than one writer is simultaneously present in the critical section as well as both writers and readers are not simultaneously present in the critical section), we can say that the above synchronization mechanism follows mutual exclusion.
 - Since after each execution the required semaphores are released so that they can be accessed by other processes. And, there is no deadlock situations occuring here, so our synchronization mechanism follows the progress requirement rule.
 - Since **sequence** semaphore makes sure that order of arrival of processes is preserved and we preserve it in a queue which ensures that each process will get a chance. This means that the mechanism follows the bounded waiting rule.
+
+>**Note:** All the utilities I have used here are present in *[utilities.md](./utilities.md)*
